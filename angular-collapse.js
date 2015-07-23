@@ -1,69 +1,157 @@
 angular.module('angular-collapse', [])
-.directive('ngCollapse', ['$animate', function($animate){
+.directive('ngCollapse', ['$animate', '$timeout', function($animate, $timeout){
 	return {
 		link: function(scope, element, attrs){
+			// main collapse class, use collapse-options to override transition settings
+			element.addClass('collapse');
+
+			var init = true;
+			var config;
+			var animator;
 
 			function expand(){
-				element.removeClass('collapse')
-				  .addClass('collapsing')
+				if(init){ return expandDone(); }
+
+				// before setting up the animation, add the in class so the element is displayed (and we can read its rendered dimensions)
+				element.addClass('in')
 				  .attr('aria-expanded', true)
 				  .attr('aria-hidden', false);
 
-			    var animate = { to: {} };
+			    var css = {};
+			    var animate = { to: {}, from: {} };
 
-			    animate.to.height = element[0].scrollHeight + 'px';
+			    // build the animation
 
-				$animate.addClass(element, 'in', animate).then(expandDone);
+			    // vertical
+			    if(!config || config.vertical){
+			    	animate.from.height = '0';
+			    	animate.to.height = element[0].scrollHeight + 'px';
+			    }
+
+			    // horizontal
+			    if(config && config.horizontal){
+			    	animate.from.width = '0';
+			    	animate.to.width = element[0].scrollWidth + 'px';
+			    }
+
+			    // set the appropriate transition properties
+			    var animate_props = Object.keys(animate.to);
+			    animate_props.push('visibility');
+			    css['-webkit-transition-property'] = css['transition-property'] = animate_props.join(',');
+
+			    // apply the css needed for the transition
+			    element.css(css)
+
+			    // cancel any existing animations
+				if(animator){
+					$animate.cancel(animator);
+				}
+
+				// animate with the collapsing class applied
+				animator = $animate.animate(element, animate.from, animate.to, 'collapsing');
+				animator.then(expandDone);
 			}
 
 			function expandDone(){
-				var css = {};
-				css.height =  'auto';
+				if(animator){ delete animator; }
 
-				element.removeClass('collapsing');
-				element.css(css);
+				// reset element's style for expanded state
+				var css = {};
+
+				// vetical
+				if(!config || config.vertical){
+					css.height =  'auto';
+				}
+
+				// horizontal
+				if(config && config.horizontal){
+					css.width = 'auto';
+				}
+
+				// reset transition properties
+				css['transition-property'] = css['-webkit-transition-property'] = 'all';
+
+				// apply post-expand css
+				element.css(css)
+						.addClass('in');
 			}
 
 
 			function collapse(){
+				if(init){ return collapseDone(); }
+
 				var css = {};
-				var animate = { to: {} };
-				
-				css.height = element[0].scrollHeight + 'px';
-				animate.to.height = '0';
+				var animate = { to: {}, from: {} };
 
-				element
-				  // IMPORTANT: The height must be set before adding "collapsing" class.
-				  // Otherwise, the browser attempts to animate from height 0 (in
-				  // collapsing class) to the given height here.
-				  .css(css)
-				  // initially all panel collapse have the collapse class, this removal
-				  // prevents the animation from jumping to collapsed state
-				  .removeClass('collapse')
-				  .addClass('collapsing')
-				  .attr('aria-expanded', false)
-				  .attr('aria-hidden', true);
+				if(!config || config.vertical){
+					//css.height = element[0].scrollHeight + 'px';
+					animate.from.height = element[0].scrollHeight + 'px';
+					animate.to.height = '0';
+				}
 
-				$animate.removeClass(element, 'in', animate).then(collapseDone);
+				if(config && config.horizontal){
+					//css.width = element[0].scrollWidth + 'px';
+					animate.from.width = element[0].scrollWidth + 'px';
+					animate.to.width = '0';
+				}
+
+				// set the appropriate transition properties
+				var animate_props = Object.keys(animate.to);
+				animate_props.push('visibility');
+				css['-webkit-transition-property'] = css['transition-property'] = animate_props.join(', ');
+
+				// apply the css needed for the transition
+				element.css(css)
+						.removeClass('in')	// remove the in class before animating to prevent flicker at end (collapsing class has display: block)
+						.attr('aria-expanded', false)
+				  		.attr('aria-hidden', true);				  
+
+				// cancel any existing animations
+				if(animator){
+					$animate.cancel(animator);
+				}
+
+				// animate with the collapsing class applied
+				animator = $animate.animate(element, animate.from, animate.to, 'collapsing');
+				animator.then(collapseDone);
 			}
 
 			function collapseDone(){
+				if(animator){ delete animator; }
+				
+				// reset element's style for collapsed state
 				var css = {};
-				css.height = 0;
 
+				// vertical
+				if(!config || config.vertical){
+					css.height = '0';
+				}
+
+				// horizontal
+				if(config && config.horizontal){
+					css.width = '0';
+				}
+
+				// reset transition properties
+				css['transition-property'] = css['-webkit-transition-property'] = 'all';
+
+				// apply post-collapse css
 				element.css(css);
-				element.removeClass('collapsing');
-				element.addClass('collapse');
 			}
 
-			
-
+			// watch the ng-collapse toggler
 			scope.$watch(attrs.ngCollapse, function(shouldCollapse){
 				if (shouldCollapse) {
 				  collapse();
 				} else {
 				  expand();
 				}
+				if(init){ init = false; } // initialization done
+			});
+
+			// watch the collapse-options, reading them into config
+			scope.$watchCollection(attrs.collapseOptions, function(options){
+				config = options;
 			});
 		}
 	};
