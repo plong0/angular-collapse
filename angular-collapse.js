@@ -9,6 +9,29 @@ angular.module('angular-collapse', [])
 			var config;
 			var animator;
 
+			// read in class="content" children so we can fix the size
+			var contents;
+			var children = element.children();
+			for(var i=0; i < children.length; i++){
+			  var content = angular.element(children[i]);
+			  if(content.hasClass('content')){
+			    if(!contents){ contents = []; }
+			    contents.push({	element: content,
+			    				originalWidth: content[0].style.width || (content.css('width') != '0px'?content.css('width'):'')
+			    			});
+			  }
+			}
+			function fixContentSize(reset){
+				angular.forEach(contents, function(content){
+					if(!content.originalWidth || content.originalWidth == 'auto'){
+						if(!reset && !content.renderWidth){
+							content.renderWidth = content.element[0].scrollWidth+'px';
+						}
+						content.element.css( { width: reset ? content.originalWidth : content.renderWidth } );
+					}
+				});
+			}
+
 			function expand(){
 				if(init){ return expandDone(); }
 
@@ -16,6 +39,9 @@ angular.module('angular-collapse', [])
 				element.addClass('in')
 				  .attr('aria-expanded', true)
 				  .attr('aria-hidden', false);
+
+				// fix inner content element sizes
+				fixContentSize();
 
 			    var css = {};
 			    var animate = { to: {}, from: {} };
@@ -58,6 +84,9 @@ angular.module('angular-collapse', [])
 				// reset element's style for expanded state
 				var css = {};
 
+				// reset inner content element sizes
+				fixContentSize(true);
+
 				// vetical
 				if(!config || config.vertical){
 					css.height =  'auto';
@@ -95,6 +124,9 @@ angular.module('angular-collapse', [])
 					animate.to.width = '0';
 				}
 
+				// fix inner content element sizes
+				fixContentSize();
+
 				// set the appropriate transition properties
 				var animate_props = Object.keys(animate.to);
 				animate_props.push('visibility');
@@ -121,6 +153,9 @@ angular.module('angular-collapse', [])
 				
 				// reset element's style for collapsed state
 				var css = {};
+
+				// reset inner content element sizes
+				fixContentSize(true);
 
 				// vertical
 				if(!config || config.vertical){
