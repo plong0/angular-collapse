@@ -241,12 +241,14 @@ angular.module('angular-collapse', [])
 
 			// watch the ng-collapse toggler
 			scope.$watch(attrs.ngCollapse, function(shouldCollapse){
-				if (shouldCollapse) {
-				  collapse();
-				} else {
-				  expand();
-				}
-				if(init){ init = false; } // initialization done
+				$timeout(function(){
+					if (shouldCollapse) {
+					  collapse();
+					} else {
+					  expand();
+					}
+					if(init){ init = false; } // initialization done
+				});
 			});
 
 			// watch the collapse-options, reading them into config
