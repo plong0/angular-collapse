@@ -36,11 +36,12 @@ angular.module('angular-collapse', [])
 				var css = {};
 				if(angular.isUndefined(properties)){
 					// reset transition properties
-					css['-webkit-transition-property'] = css['transition-property'] = 'all';
-				    css['-webkit-transition-duration'] = css['transition-duration'] = '0.35s';
-				    css['-webkit-transition-timing-function'] = css['transition-timing-function'] = 'ease';
+				    css['-webkit-transition-property'] = css['transition-property'] = '';
+				    css['-webkit-transition-duration'] = css['transition-duration'] = '';
+				    css['-webkit-transition-timing-function'] = css['transition-timing-function'] = '';
 				}
 				else{
+					// configure transition properties
 				    css['-webkit-transition-property'] = css['transition-property'] = properties.join(',');
 					if(config && config.duration){
 						css['-webkit-transition-duration'] = css['transition-duration'] = config.duration;
@@ -121,19 +122,21 @@ angular.module('angular-collapse', [])
 
 				// vetical
 				if(!config || config.vertical){
-					css.height =  'auto';
+					css.height =  '';
 
 					if(config && config.vertical == 'bottom'){
 						css.position = '';
+						css.top = '';
 					}
 				}
 
 				// horizontal
 				if(config && config.horizontal){
-					css.width = 'auto';
+					css.width = '';
 
 					if(config.horizontal == 'right'){
 						css.position = '';
+						css.left = '';
 					}
 				}
 
@@ -215,6 +218,7 @@ angular.module('angular-collapse', [])
 
 					if(config && config.vertical == 'bottom'){
 						css.position = '';
+						css.top = '';
 					}
 				}
 
@@ -224,6 +228,7 @@ angular.module('angular-collapse', [])
 
 					if(config.horizontal == 'right'){
 						css.position = '';
+						css.left = '';
 					}
 				}
 
