@@ -32,6 +32,26 @@ angular.module('angular-collapse', [])
 				});
 			}
 
+			function setTransitionProperties(properties){
+				var css = {};
+				if(angular.isUndefined(properties)){
+					// reset transition properties
+					css['-webkit-transition-property'] = css['transition-property'] = 'all';
+				    css['-webkit-transition-duration'] = css['transition-duration'] = '0.35s';
+				    css['-webkit-transition-timing-function'] = css['transition-timing-function'] = 'ease';
+				}
+				else{
+				    css['-webkit-transition-property'] = css['transition-property'] = properties.join(',');
+					if(config && config.duration){
+						css['-webkit-transition-duration'] = css['transition-duration'] = config.duration;
+					}
+					if(config && config.timing){
+						css['-webkit-transition-timing-function'] = css['transition-timing-function'] = config.timing;
+					}
+				}
+				element.css(css);
+			}
+
 			function expand(){
 				if(init){ return expandDone(); }
 
@@ -63,7 +83,7 @@ angular.module('angular-collapse', [])
 			    // set the appropriate transition properties
 			    var animate_props = Object.keys(animate.to);
 			    animate_props.push('visibility');
-			    css['-webkit-transition-property'] = css['transition-property'] = animate_props.join(',');
+			    setTransitionProperties(animate_props);
 
 			    // apply the css needed for the transition
 			    element.css(css)
@@ -98,7 +118,7 @@ angular.module('angular-collapse', [])
 				}
 
 				// reset transition properties
-				css['transition-property'] = css['-webkit-transition-property'] = 'all';
+				setTransitionProperties();
 
 				// apply post-expand css
 				element.css(css)
@@ -130,7 +150,7 @@ angular.module('angular-collapse', [])
 				// set the appropriate transition properties
 				var animate_props = Object.keys(animate.to);
 				animate_props.push('visibility');
-				css['-webkit-transition-property'] = css['transition-property'] = animate_props.join(', ');
+				setTransitionProperties(animate_props);
 
 				// apply the css needed for the transition
 				element.css(css)
@@ -168,7 +188,7 @@ angular.module('angular-collapse', [])
 				}
 
 				// reset transition properties
-				css['transition-property'] = css['-webkit-transition-property'] = 'all';
+				setTransitionProperties();
 
 				// apply post-collapse css
 				element.css(css);
