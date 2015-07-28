@@ -72,12 +72,24 @@ angular.module('angular-collapse', [])
 			    if(!config || config.vertical){
 			    	animate.from.height = '0';
 			    	animate.to.height = element[0].scrollHeight + 'px';
+
+			    	if(config && config.vertical == 'bottom'){
+			    		css.position = 'relative';
+			    		animate.from.top = element[0].scrollHeight + 'px';
+			    		animate.to.top = '0';
+			    	}
 			    }
 
 			    // horizontal
 			    if(config && config.horizontal){
 			    	animate.from.width = '0';
 			    	animate.to.width = element[0].scrollWidth + 'px';
+
+					if(config.horizontal == 'right'){
+						css.position = 'relative';
+						animate.from.left = element[0].scrollWidth + 'px';
+						animate.to.left = '0';
+					}
 			    }
 
 			    // set the appropriate transition properties
@@ -99,7 +111,7 @@ angular.module('angular-collapse', [])
 			}
 
 			function expandDone(){
-				if(animator){ delete animator; }
+				if(animator){ animator = null; }
 
 				// reset element's style for expanded state
 				var css = {};
@@ -110,11 +122,19 @@ angular.module('angular-collapse', [])
 				// vetical
 				if(!config || config.vertical){
 					css.height =  'auto';
+
+					if(config && config.vertical == 'bottom'){
+						css.position = '';
+					}
 				}
 
 				// horizontal
 				if(config && config.horizontal){
 					css.width = 'auto';
+
+					if(config.horizontal == 'right'){
+						css.position = '';
+					}
 				}
 
 				// reset transition properties
@@ -136,12 +156,24 @@ angular.module('angular-collapse', [])
 					//css.height = element[0].scrollHeight + 'px';
 					animate.from.height = element[0].scrollHeight + 'px';
 					animate.to.height = '0';
+
+					if(config && config.vertical == 'bottom'){
+						css.position = 'relative';
+						animate.from.top = '0';
+						animate.to.top = element[0].scrollHeight + 'px';
+					}
 				}
 
 				if(config && config.horizontal){
 					//css.width = element[0].scrollWidth + 'px';
 					animate.from.width = element[0].scrollWidth + 'px';
 					animate.to.width = '0';
+
+					if(config.horizontal == 'right'){
+						css.position = 'relative';
+						animate.from.left = '0';
+						animate.to.left = element[0].scrollWidth + 'px';
+					}
 				}
 
 				// fix inner content element sizes
@@ -169,7 +201,7 @@ angular.module('angular-collapse', [])
 			}
 
 			function collapseDone(){
-				if(animator){ delete animator; }
+				if(animator){ animator = null; }
 				
 				// reset element's style for collapsed state
 				var css = {};
@@ -180,11 +212,19 @@ angular.module('angular-collapse', [])
 				// vertical
 				if(!config || config.vertical){
 					css.height = '0';
+
+					if(config && config.vertical == 'bottom'){
+						css.position = '';
+					}
 				}
 
 				// horizontal
 				if(config && config.horizontal){
 					css.width = '0';
+
+					if(config.horizontal == 'right'){
+						css.position = '';
+					}
 				}
 
 				// reset transition properties
