@@ -18,3 +18,7 @@
   -webkit-transition-timing-function: ease;
   transition-timing-function: ease;
 }
+
+.collapse .content {
+  display: inline-block;
+}

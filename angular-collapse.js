@@ -25,11 +25,23 @@ angular.module('angular-collapse', [])
 				angular.forEach(contents, function(content){
 					if(!content.originalWidth || content.originalWidth == 'auto'){
 						if(!reset && !content.renderWidth){
-							content.renderWidth = content.element[0].scrollWidth+'px';
+							var size = getRenderSize(content.element);
+							content.renderWidth = size.width+'px';
 						}
-						content.element.css( { width: reset ? content.originalWidth : content.renderWidth } );
+						content.element.css( { width: reset ? content.originalWidth : content.renderWidth } );						
 					}
 				});
+			}
+
+			function getRenderSize(element){
+				var size = {};
+				var clone = element.clone();
+				clone.css({"visibility":"visible", "display":"table"});
+				document.body.appendChild(clone[0]);
+				size.width = clone[0].clientWidth;
+				size.height = clone[0].clientHeight;
+				document.body.removeChild(clone[0]);
+				return size;
 			}
 
 			function setTransitionProperties(properties){
@@ -69,14 +81,16 @@ angular.module('angular-collapse', [])
 
 			    // build the animation
 
+			    var size = getRenderSize(element);
+
 			    // vertical
 			    if(!config || config.vertical){
 			    	animate.from.height = '0';
-			    	animate.to.height = element[0].scrollHeight + 'px';
+			    	animate.to.height = size.height+'px';
 
 			    	if(config && config.vertical == 'bottom'){
 			    		css.position = 'relative';
-			    		animate.from.top = element[0].scrollHeight + 'px';
+			    		animate.from.top = size.height+'px';
 			    		animate.to.top = '0';
 			    	}
 			    }
@@ -84,11 +98,11 @@ angular.module('angular-collapse', [])
 			    // horizontal
 			    if(config && config.horizontal){
 			    	animate.from.width = '0';
-			    	animate.to.width = element[0].scrollWidth + 'px';
+			    	animate.to.width = size.width+'px';
 
 					if(config.horizontal == 'right'){
 						css.position = 'relative';
-						animate.from.left = element[0].scrollWidth + 'px';
+						animate.from.left = size.width+'px';
 						animate.to.left = '0';
 					}
 			    }
@@ -154,28 +168,27 @@ angular.module('angular-collapse', [])
 
 				var css = {};
 				var animate = { to: {}, from: {} };
+				var size = getRenderSize(element);
 
 				if(!config || config.vertical){
-					//css.height = element[0].scrollHeight + 'px';
-					animate.from.height = element[0].scrollHeight + 'px';
+					animate.from.height = size.height+'px';
 					animate.to.height = '0';
 
 					if(config && config.vertical == 'bottom'){
 						css.position = 'relative';
 						animate.from.top = '0';
-						animate.to.top = element[0].scrollHeight + 'px';
+						animate.to.top = size.height+'px';
 					}
 				}
 
 				if(config && config.horizontal){
-					//css.width = element[0].scrollWidth + 'px';
-					animate.from.width = element[0].scrollWidth + 'px';
+					animate.from.width = size.width+'px';
 					animate.to.width = '0';
 
 					if(config.horizontal == 'right'){
 						css.position = 'relative';
 						animate.from.left = '0';
-						animate.to.left = element[0].scrollWidth + 'px';
+						animate.to.left = size.width+'px';
 					}
 				}
 
