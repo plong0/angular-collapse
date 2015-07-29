@@ -24,11 +24,15 @@ angular.module('angular-collapse', [])
 			function fixContentSize(reset){
 				angular.forEach(contents, function(content){
 					if(!content.originalWidth || content.originalWidth == 'auto'){
-						if(!reset && !content.renderWidth){
+						if(!reset){
 							var size = getRenderSize(content.element);
 							content.renderWidth = size.width+'px';
+							content.element.css( { width: content.renderWidth } );
+
 						}
-						content.element.css( { width: reset ? content.originalWidth : content.renderWidth } );						
+						else{
+							content.element.css( { width: content.originalWidth } );
+						}
 					}
 				});
 			}
