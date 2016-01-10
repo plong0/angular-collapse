@@ -41,10 +41,10 @@ angular.module('angular-collapse', [])
 				var size = {};
 				var clone = element.clone();
 				clone.css({"visibility":"visible", "display":"table"});
-				document.body.appendChild(clone[0]);
+				element[0].parentElement.appendChild(clone[0]);
 				size.width = clone[0].clientWidth;
 				size.height = clone[0].clientHeight;
-				document.body.removeChild(clone[0]);
+				element[0].parentElement.removeChild(clone[0]);
 				return size;
 			}
 
