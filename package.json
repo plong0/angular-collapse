@@ -1,0 +1,17 @@
+{
+  "name": "angular-collapse",
+  "version": "0.2.3",
+  "description": "Customizable ng-collapse directive",
+  "authors": [
+    "plong0 <pat@technaturally.com>"
+  ],
+  "keywords": [
+    "angular",
+    "collapse",
+    "animate"
+  ],
+  "main": "angular-collapse.js",
+  "peerDependencies": {
+    "angular": ">= 1.3"
+  }
+}
